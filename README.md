@@ -1,7 +1,3 @@
-這份 `README.md` 將作為專案的入口文件，整合了我們之前討論的架構、環境設定（Conda/Git）以及 Gemini API 的配置說明。
-
-建議檔名: README.md
-
 ```markdown
 # 修正 [README.md] 區塊 A: 專案說明文件 (初始化專案文件)
 # 修正原因：建立專案基礎文件，包含安裝、設定與執行指南。
@@ -26,7 +22,7 @@
 * **AI 模型**: Google Gemini Pro (透過 `google-generativeai`)
 * **資料庫**: SQLite
 * **爬蟲**: Requests + BeautifulSoup4
-
+```
 ## 安裝指南
 
 ### 1. 環境設定 (Conda)
@@ -77,21 +73,15 @@ streamlit run app.py
 
 ```text
 tool-personal-library/
-│
-├── .streamlit\
-│   └── config.toml      # [新增] Streamlit 原生主題設定 (設定 Base Color)
-│
-├── config\
-│   └── styles.css       # [新增] 客製化 CSS (還原 Figma 的漸層、圓角、陰影)
-│
-├── data\
-│   └── library.db       # [自動生成] SQLite 資料庫檔案
-│
-├── modules\
-│   ├── __init__.py
-│   ├── models.py        # [核心] 定義 Book DataClass 與 Enum
-│   └── database.py      # [核心] 資料庫連線與 Table 初始化
-│
-├── app.py               # [入口] 主程式 (負責 UI 佈局與 CSS 注入)
-├── requirements.txt         # 套件清單
+├── app.py                   # 主程式 (已完成 UI 路由與佈局)
+├── requirements.txt         # 依賴 (已包含 beautifulsoup4, requests, google-generativeai)
+├── data/library.db          # SQLite 資料庫
+├── config/styles.css        # UI 樣式
+├── views/
+│   ├── list_view.py         # 列表視圖
+│   └── book_detail.py       # 詳細資訊面板 (編輯/檢視)
+└── modules/
+    ├── models.py            # Pydantic 模型 (Book, BookStatus)
+    ├── database.py          # SQLite 操作
+    └── services.py          # 業務邏輯 (目前 add_book 使用的是 Mock Data)
 ```

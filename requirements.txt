@@ -7,9 +7,10 @@ requests                    # 發送網頁請求
 beautifulsoup4              # 解析 HTML
 lxml                        # 高效能解析器 (BeautifulSoup 依賴)
 fake-useragent              # 隨機 User-Agent (避免被擋)
+cloudscraper                # [新增] 專門解決 Cloudflare 403 阻擋
 
 # --- AI 與資料處理 ---
-google-generativeai         # Google Gemini 官方 SDK 建議單獨安裝
+google-genai                # [關鍵修正] 遷移至新版 SDK 
 pandas                      # 處理表格資料
 pydantic                    # 強型別資料結構驗證 (對應 models.py)
 

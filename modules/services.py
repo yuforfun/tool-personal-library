@@ -1,45 +1,69 @@
+# 修正 [modules/services.py] 區塊 A: 整合爬蟲與 AI 實作真實入庫
+# 修正原因：移除 Mock Data，串接 Scraper 與 AI Agent 實現自動化書籍建立。
+# 替換/新增指示：請完全取代原有的 modules/services.py。
+
 import uuid
-import random
 from datetime import date
-from typing import List
+from typing import List, Optional
 from .models import Book, BookStatus
 from . import database
+from . import scraper
+from . import ai_agent
 
-# 模擬資料來源
-MOCK_TITLES = ["重生之豪門千金", "星際種田日常", "無限流：生存遊戲", "某某修仙傳", "霸道總裁愛上我"]
-MOCK_AUTHORS = ["晉江一姐", "半夏微涼", "吃瓜路人", "天蠶土豆絲", "顧漫漫"]
-MOCK_SOURCES = ["晉江", "半夏", "小說狂人"]
-MOCK_TAGS = ["重生", "甜文", "爽文", "HE", "強強", "星際", "系統"]
-
-def create_mock_book(url: str) -> Book:
-    """生成一本模擬書籍資料 (Phase 2 測試用)"""
-    book_id = str(uuid.uuid4())
-    # 【關鍵修正點】 移除書名後面的 ID 後綴，保持介面乾淨
-    title = random.choice(MOCK_TITLES) 
+def add_book(url: str) -> Optional[Book]:
+    """
+    核心功能：從網址新增書籍
+    流程：爬蟲 -> AI 分析 -> 建立物件 -> 存入 DB
+    """
+    # 1. 執行爬蟲
+    print(f"🚀 開始處理書籍：{url}")
+    raw_data = scraper.scrape_book(url)
     
-    # 隨機生成 3-5 個標籤
-    tags = random.sample(MOCK_TAGS, k=random.randint(3, 5))
+    if not raw_data:
+        print(f"❌ 爬蟲失敗，無法新增書籍")
+        return None
+
+    # 2. 執行 AI 分析 (容錯處理：如果 AI 失敗，還是可以建立書籍，只是沒分析資料)
+    ai_result = ai_agent.analyze_book(raw_data)
+    
+    # 準備欄位資料
+    tags = []
+    ai_summary = "AI 尚未分析"
+    ai_plot = "AI 尚未分析"
+    
+    if ai_result:
+        tags = ai_result.tags
+        ai_summary = ai_result.summary
+        ai_plot = ai_result.plot
+    
+    # 3. 建立 Book 物件
+    book_id = str(uuid.uuid4())
     
     new_book = Book(
         id=book_id,
-        title=title,
-        author=random.choice(MOCK_AUTHORS),
-        source=random.choice(MOCK_SOURCES),
+        title=raw_data.title,
+        author=raw_data.author,
+        source=raw_data.source_name,
         url=url,
-        word_count=f"{random.randint(20, 300)}萬字",
-        chapters=f"{random.randint(50, 500)}章",
+        word_count="未知", # 部分網站沒抓字數，暫時留空
+        chapters="未知",
         status=BookStatus.UNREAD,
         tags=tags,
-        ai_summary="這是一本由 AI 模擬生成的書籍，用於測試系統介面與資料庫連線功能。",
-        official_desc="這是官方文案的佔位符。這裡通常會顯示爬蟲抓取到的詳細簡介。",
-        ai_plot_analysis="這是 AI 生成的劇情分析佔位符。Phase 3 將會串接 Gemini 進行真正的內容生成。",
+        ai_summary=ai_summary,
+        official_desc=raw_data.description,
+        ai_plot_analysis=ai_plot,
         added_date=date.today(),
         user_rating=0
     )
     
-    # 寫入資料庫
-    database.insert_book(new_book)
-    return new_book
+    # 4. 寫入資料庫
+    try:
+        database.insert_book(new_book)
+        print(f"✅ 書籍已存入資料庫：{new_book.title}")
+        return new_book
+    except Exception as e:
+        print(f"❌ 資料庫寫入失敗: {e}")
+        return None
 
 def get_books() -> List[Book]:
     """取得所有書籍"""
@@ -48,12 +72,8 @@ def get_books() -> List[Book]:
 def update_book_status(book: Book, new_status: BookStatus) -> Book:
     """更新狀態，並自動處理完食日期"""
     book.status = new_status
-    
-    # 自動化邏輯：如果是「已完食」，且沒有完成日，則填入今天
     if new_status == BookStatus.COMPLETED and not book.completed_date:
         book.completed_date = date.today()
-    # 如果不是已完食，清除完成日 (可選，視需求而定，這裡暫時保留記錄)
-    
     database.update_book(book)
     return book
 
@@ -65,7 +85,7 @@ def remove_book(book_id: str):
     """移除書籍"""
     database.delete_book(book_id)
 
-# // 功能: 業務邏輯層
-# // input: UI 操作
-# // output: 處理後的資料與資料庫互動
-# // 其他補充: 包含 create_mock_book 用於測試
+# // 功能: 業務邏輯層 (真實版)
+# // input: URL
+# // output: 整合爬蟲與 AI 後的 Book 物件
+# // 其他補充: 已移除所有 Mock Data 相關程式碼
