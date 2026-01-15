@@ -16,17 +16,14 @@ class BookStatus(str, Enum):
 
 class Book(BaseModel):
     """
-    書籍資料模型
+    書籍資料模型 (移除字數版)
     """
     id: str = Field(..., description="UUID 主鍵")
     title: str
     author: str
     source: str = Field(default="未知來源")
     url: str
-    word_count: str = Field(default="0字")
-    chapters: str = Field(default="0章")
-    
-    # 核心狀態
+    # // 【關鍵修正點】 移除 word_count 與 chapters，由 ai_summary 負擔列表顯示
     status: BookStatus = Field(default=BookStatus.UNREAD)
     tags: List[str] = Field(default_factory=list)
     
@@ -38,10 +35,9 @@ class Book(BaseModel):
     # 使用者互動
     added_date: date = Field(default_factory=date.today)
     completed_date: Optional[date] = None
-    user_rating: int = Field(default=0, ge=0, le=5)  # 0-5 星
+    user_rating: int = Field(default=0, ge=0, le=5)
     user_review: str = Field(default="")
 
     # // 功能: 定義書籍資料結構
     # // input: 無
     # // output: Pydantic Model Class
-    # // 其他補充: 繼承 BaseModel 可自動處理 JSON 序列化

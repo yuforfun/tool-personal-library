@@ -15,7 +15,7 @@ def main():
     
     # 測試網址：隨便挑一本看起來很套路的書來測試毒舌效果
     # 這裡預設使用剛剛測試過的晉江網址，您也可以換成其他的
-    test_url = "https://www.banxia.la/books/33044.html" 
+    test_url = "https://www.banxia.la/books/349286.html" 
     
     # 1. 先爬蟲
     print(f"STEP 1: 爬取網頁 {test_url}")

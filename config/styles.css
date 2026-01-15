@@ -135,3 +135,94 @@ button[kind="secondary"] {
 [data-testid="column"] {
     padding: 0 !important;
 }
+/* === Gallery Grid System === */
+.book-cover-container {
+    perspective: 1000px; /* 3D 透視感 */
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.book-cover-container:hover {
+    transform: translateY(-5px);
+}
+
+.book-cover {
+    width: 100%;
+    /* 設定 2:3 的黃金比例高度，利用 padding-bottom 技巧確保響應式 */
+    height: 0;
+    padding-bottom: 150%; 
+    position: relative;
+    border-radius: 8px 12px 12px 8px; /* 右側圓角較大，模擬書頁 */
+    box-shadow: 
+        2px 4px 8px rgba(0,0,0,0.15), /* 基礎陰影 */
+        inset 2px 0 4px rgba(255,255,255,0.2), /* 頂部高光 */
+        inset -2px 0 4px rgba(0,0,0,0.1); /* 右側陰影 */
+    overflow: hidden;
+    background-color: #e8dcd5; /* 預設底色 */
+}
+
+/* 書背陰影效果 - 模擬書脊 */
+.book-spine {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    background: linear-gradient(to right, 
+        rgba(255,255,255,0.3) 0%, 
+        rgba(255,255,255,0) 20%, 
+        rgba(0,0,0,0.1) 40%, 
+        rgba(0,0,0,0.2) 100%);
+    z-index: 10;
+    border-radius: 8px 0 0 8px;
+}
+
+/* 書名排版 */
+.book-title-overlay {
+    position: absolute;
+    top: 15px;
+    left: 20px; /* 避開書脊 */
+    right: 10px;
+    bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    z-index: 5;
+}
+
+.book-title-text {
+    font-family: "Microsoft JhengHei", serif;
+    font-weight: bold;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    
+    /* 限制行數，超過顯示 ... */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-author-text {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: normal;
+}
+
+/* 狀態印章 (例如：已完食) */
+.book-status-stamp {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 2px 8px;
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.9);
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(4px);
+}
