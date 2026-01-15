@@ -1,0 +1,19 @@
+# --- 核心介面與應用 ---
+streamlit                   # Web App 框架
+watchdog                    # 讓 Streamlit 在 Windows 上能更靈敏地偵測檔案變更重啟
+
+# --- 爬蟲模組 ---
+requests                    # 發送網頁請求
+beautifulsoup4              # 解析 HTML
+lxml                        # 高效能解析器 (BeautifulSoup 依賴)
+fake-useragent              # 隨機 User-Agent (避免被擋)
+
+# --- AI 與資料處理 ---
+google-generativeai         # Google Gemini 官方 SDK 建議單獨安裝
+pandas                      # 處理表格資料
+pydantic                    # 強型別資料結構驗證 (對應 models.py)
+
+# --- 開發工具 (Code Quality) ---
+black                       # 程式碼格式化
+flake8                      # 語法檢查
+python-dotenv               # 讀取 .env 環境變數 (本地開發用)

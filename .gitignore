@@ -1,0 +1,34 @@
+# Python 編譯與暫存檔
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 虛擬環境 (如果未來有建立)
+env/
+venv/
+.venv/
+.conda/
+
+# VS Code 設定檔 (個人設定不需上傳)
+.vscode/
+
+# 敏感資料與環境變數 (保護 Gemini API Key 絕對關鍵！)
+.env
+.streamlit/secrets.toml
+config/secrets.toml
+*.pem
+*.key
+
+# 資料庫 (本地資料不建議上傳 Git，保留結構即可)
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# 作業系統縮圖檔
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Log 檔案
+*.log
