@@ -1,0 +1,137 @@
+/* 修正 [config/styles.css] 區塊 A: 標準化樣式表 (Final Phase 2) */
+/* 修正原因：移除 Layout Hack，回歸自然流動佈局，確保所有元件可見。 */
+
+/* ==========================================================================
+   Global & Fonts
+   ========================================================================== */
+html, body, [class*="css"] {
+    font-family: "Microsoft JhengHei", "Microsoft YaHei", "Segoe UI", sans-serif !important;
+}
+
+.stApp {
+    background-color: #f5f0eb;
+}
+
+/* 底部留白，讓自然捲動時不會太貼底 */
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 3rem !important;
+    max-width: 100% !important;
+}
+
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    height: 2.5rem !important;
+}
+.stAppDeployButton, [data-testid="stMainMenu"] {
+    display: none !important;
+}
+[data-testid="stSidebarCollapsedControl"] {
+    display: block !important;
+    color: #5a5a5a !important;
+    top: 0.2rem !important;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: linear-gradient(to bottom, #e8dcd5, #d9c9ba);
+    border-right: 1px solid #b8a99a;
+}
+[data-testid="stSidebar"] h1 {
+    font-size: 1.5rem !important;
+}
+
+/* ==========================================================================
+   Input Components (通用視覺標準)
+   ========================================================================== */
+.stTextInput > div > div > input,
+.stSelectbox > div > div > div,
+div[data-baseweb="textarea"] textarea,
+div[data-testid="stTextArea"] textarea {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #b8a99a !important;
+    border-radius: 8px !important;
+    color: #5a5a5a !important;
+    font-size: 1rem !important;
+    box-shadow: none !important;
+}
+
+/* 聚焦狀態 */
+.stTextInput > div > div > input:focus,
+.stSelectbox > div > div > div[data-baseweb="select"]:focus-within,
+div[data-baseweb="textarea"] textarea:focus,
+div[data-testid="stTextArea"] textarea:focus {
+    border-color: #a89080 !important;
+    box-shadow: 0 0 0 2px rgba(168, 144, 128, 0.2) !important;
+    outline: none !important;
+}
+
+/* TextArea 微調：給予內距，但不強制鎖死高度，允許 Streamlit 自動計算 */
+div[data-baseweb="textarea"] textarea,
+div[data-testid="stTextArea"] textarea {
+    padding: 10px !important;
+    min-height: 100px; 
+}
+
+/* ==========================================================================
+   Radio Button & Buttons
+   ========================================================================== */
+[data-testid="stRadio"] div[role="radiogroup"] {
+    background-color: #e8dcd5;
+    padding: 2px;
+    border-radius: 8px;
+    gap: 0px !important;
+    display: flex;
+    align-items: stretch;
+}
+[data-testid="stRadio"] div[role="radiogroup"] label {
+    padding: 6px 16px !important;
+    font-size: 0.85rem !important;
+    margin-bottom: 0px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border: 2px solid transparent !important;
+}
+[data-testid="stRadio"] div[role="radiogroup"] label:hover {
+    background-color: rgba(255,255,255,0.5) !important;
+}
+
+.stButton > button {
+    background-color: #a89080 !important;
+    color: white !important;
+    border-radius: 6px !important;
+    border: none !important;
+    box-shadow: 0 1px 2px rgba(168, 144, 128, 0.2);
+    height: auto !important;
+    padding: 0.4rem 0.8rem !important;
+}
+.stButton > button:hover {
+    background-color: #967d6d !important;
+    transform: translateY(-1px);
+}
+
+button[kind="secondary"] {
+    background-color: transparent !important;
+    border: 1px solid #b8a99a !important;
+    color: #8b7866 !important;
+    box-shadow: none !important;
+}
+
+/* List Item Card */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    background-color: white;
+    border-radius: 8px !important;
+    border: 1px solid #f0ebe6 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: 8px 12px !important;
+    margin-bottom: 8px;
+}
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    border-color: #a89080 !important;
+}
+[data-testid="column"] {
+    padding: 0 !important;
+}

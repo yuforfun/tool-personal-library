@@ -1,0 +1,15 @@
+# 修正 [.streamlit/config.toml] 區塊 A: Streamlit 主題設定 (UI Theme)
+# 修正原因：設定全域基礎色調，使其與 Figma 設計稿 (React 版) 一致。
+# 替換/新增指示：這是新檔案，請建立於 .streamlit 資料夾下。
+
+[theme]
+primaryColor = "#a89080"
+backgroundColor = "#f5f0eb"
+secondaryBackgroundColor = "#e8dcd5"
+textColor = "#5a5a5a"
+font = "sans serif"
+
+# // 功能: 定義 Streamlit 原生元件的配色方案
+# // input: 無
+# // output: UI 樣式設定
+# // 其他補充: 這些設定會自動套用到 st.button, st.sidebar 等元件
