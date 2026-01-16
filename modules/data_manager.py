@@ -93,7 +93,7 @@ def process_csv_import(file_buffer) -> Dict[str, Any]:
             "狀態": "status", "status": "status",
             "評分": "user_rating", "rating": "user_rating",
             "標籤": "tags", "tag": "tags", "tags": "tags",
-            "完食日期": "completed_date", "date": "completed_date",
+            "追完日期": "completed_date", "date": "completed_date",
             "心得": "user_review", "review": "user_review",
             "AI簡介": "ai_summary", "summary": "ai_summary",
             "AI分析": "ai_plot_analysis", "analysis": "ai_plot_analysis",

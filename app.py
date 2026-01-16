@@ -84,7 +84,7 @@ all_tags = sorted(list(set(tag for book in all_books for tag in book.tags)))
 with st.sidebar:
     st.title("快速入庫")
     with st.form("quick_add_form", clear_on_submit=True):
-        url_input = st.text_input("請輸入書籍網址", placeholder="支援：晉江 / 半夏 / 小說狂人")
+        url_input = st.text_input("請輸入書籍網址", placeholder="支援：晉江 / 博客來")
         submitted = st.form_submit_button("啟動 AI 智慧抓取", use_container_width=True)
         if submitted and url_input:
             with st.spinner("🤖 正在爬取網頁並進行 AI 分析..."):
@@ -121,7 +121,7 @@ with st.sidebar:
         st.session_state.view_mode = "settings"
         st.rerun()
         
-    st.caption(f"資料庫版本: v2.1 (BatchOps)")
+    st.caption(f"資料庫版本: v1.0 (Local)")
 
 # --- 主畫面頂部資訊 ---
 col_stats, col_space, col_view = st.columns([4, 2, 3])
@@ -180,10 +180,31 @@ if st.session_state.view_mode != "settings":
     if search_query:
         filtered_books = [b for b in filtered_books if search_query in b.title or search_query in b.author]
 
+    def get_key(obj, attr):
+        val = getattr(obj, attr)
+        return val if val else ""
+
     if sort_order == "最新入庫":
-        filtered_books.sort(key=lambda x: (x.added_date, x.author), reverse=True)
+        # === 複合排序策略 (最新優先，但同日期時作者/書名要 A-Z) ===
+        # Python 的 sort 是穩定的 (Stable)，所以我們要「倒著」寫次要條件
+        
+        # 3. 最次要：書名 (正向 A -> Z)
+        filtered_books.sort(key=lambda x: get_key(x, "title"))
+        
+        # 2. 次要：作者 (正向 A -> Z)
+        filtered_books.sort(key=lambda x: get_key(x, "author"))
+        
+        # 1. 最主要：日期 (反向 新 -> 舊)
+        filtered_books.sort(key=lambda x: x.added_date, reverse=True)
+        
     else:
-        filtered_books.sort(key=lambda x: (x.added_date, x.author), reverse=False)
+        # === 最早入庫 (全部正向) ===
+        # 日期(舊->新) -> 作者(A->Z) -> 書名(A->Z)
+        filtered_books.sort(key=lambda x: (
+            x.added_date, 
+            get_key(x, "author"), 
+            get_key(x, "title")
+        ))
 
     # 分頁運算
     items_limit = st.session_state.items_per_page

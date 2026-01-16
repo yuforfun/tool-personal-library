@@ -26,7 +26,7 @@ def render_view():
         # 1. 匯出
         csv_data = data_manager.export_csv()
         st.download_button(
-            label="📥 下載 CSV 報表 (Excel)",
+            label="📥 下載 CSV 報表",
             data=csv_data,
             file_name="library_export.csv",
             mime="text/csv",

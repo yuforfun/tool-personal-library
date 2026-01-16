@@ -22,7 +22,7 @@ def render_dashboard(books: list[Book]):
     c_chart1, c_chart2 = st.columns([1, 1], gap="medium")
     with c_chart1:
         st.subheader("📈 月度閱讀量")
-        st.caption(f"{date.today().year} 年度完食趨勢")
+        st.caption(f"{date.today().year} 年度閱讀趨勢")
         df_monthly = stats_helper.get_monthly_completed_df(books, date.today().year)
         st.bar_chart(df_monthly, color="#a89080")
     with c_chart2:

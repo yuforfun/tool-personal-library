@@ -37,7 +37,7 @@ def render_view(books: list[Book]):
         <div style="flex: 3;">書名 / 作者</div>
         <div style="flex: 1.5; text-align: center;">狀態</div>
         <div style="flex: 1.5; text-align: center;">評分</div>
-        <div style="flex: 3; text-align: left; padding-left: 10px;">短評 / 簡介</div>
+        <div style="flex: 3; text-align: center; padding-left: 10px;">短評 / 簡介</div>
         <div style="flex: 1; text-align: center;">操作</div>
     </div>
     """, unsafe_allow_html=True)
