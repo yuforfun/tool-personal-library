@@ -1,7 +1,3 @@
-# 修正 [modules/ai_agent.py] 區塊 D: 遷移至 Google GenAI SDK (Final)
-# 修正原因：響應 Google 官方棄用警告，遷移至 google-genai 新版 SDK。
-# 新增功能：使用 Client 物件、types.GenerateContentConfig 進行設定。
-
 from google import genai
 from google.genai import types
 import streamlit as st
@@ -79,13 +75,20 @@ def analyze_book(raw_data: RawBookData) -> Optional[AIAnalysisResult]:
         {raw_data.description}
 
         【任務要求】
-        1. **tags (標籤)**：提取 3-6 個最核心的元素標籤（例如：重生, 系統, 甜寵, 娛樂圈, 懸疑, HE...）。請使用台灣讀者習慣的用語。
-        2. **summary (精闢短評)**：
-           - 這是要顯示在列表上的短評。
-           - 用一句話 (40字內) 點評這本書的核心看點。
-           - 風格要像一般讀者看完書後的真實感想。
-        3. **plot (劇情摘要)**：
-           - 用 150 字以內，客觀總結這本書的主線劇情。
+        1. 僅輸出 JSON 格式，嚴禁任何解釋性文字。
+        2. 語系：繁體中文 (台灣)。
+        3. 若簡介內容極少，請根據標題進行合理推測，若完全無法判斷請填入 "未知"。
+
+        # Output 
+        1. "tags": "類別", "背景", "屬性1", "屬性2,
+        2. "summary": "40字內讀者視角評論",
+        3. "plot": "150字內客觀劇情大綱"
+
+
+        # Tagging Logic
+        - 第一個標籤必須是【核心類別】(言情/非言情/耽美/輕小說/無CP/同人)。
+        - 第二個標籤必須是【時代背景】(古代/現代/未來/民國/異世架空)。
+        - 後續標籤為【核心屬性】(優先用: 重生, 系統, 甜寵, 虐戀, 破鏡重圓, 馬甲文, 娛樂圈, 校園, 職場, 種田文, 網遊, 豪門, 升級流, 救贖)。
 
         請直接回傳 JSON。
         """

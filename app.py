@@ -1,5 +1,5 @@
-# 修正 [app.py] 區塊 E: 移除分割視圖並整合彈窗 (Phase 3 Final)
-# 修正原因：配合 Phase 3 彈窗化，移除舊的 Master-Detail 分割佈局，改為全寬度顯示並觸發 Dialog。
+# 修正 [app.py] 區塊 G: 整合 Phase 4 資料治理與設定頁面
+# 修正原因：新增設定頁面路由，並在側邊欄與頂部導航加入入口，整合 data_manager 與 settings_view。
 # 替換/新增指示：請完全替換 app.py 的內容。
 
 import streamlit as st
@@ -13,6 +13,7 @@ import views.list_view
 import views.book_detail
 import views.gallery_view 
 import views.calendar_view
+import views.settings_view # Phase 4 新增
 
 # 1. 頁面設定
 st.set_page_config(
@@ -50,17 +51,11 @@ load_css()
 # --- Helper Functions (State Sync) ---
 
 def update_page_state(new_page):
-    """
-    統一更新頁碼與 Widget 顯示狀態
-    修正：同時清除選中的書籍，防止彈窗在換頁時自動彈出
-    """
+    """統一更新頁碼與 Widget 顯示狀態"""
     st.session_state.current_page = new_page
-    
-    # 同步導航列輸入框
     st.session_state["nav_top_input"] = new_page
     st.session_state["nav_bottom_input"] = new_page
-    
-    # // 【關鍵修正點】 換頁時，視為使用者想看新列表，強制關閉/清除當前選中的書
+    # 換頁時，強制關閉/清除當前選中的書
     st.session_state.selected_book = None
 
 def reset_page():
@@ -120,11 +115,18 @@ with st.sidebar:
     status_filter = st.multiselect("閱讀狀態", options=[s for s in BookStatus], format_func=lambda x: x.value, on_change=reset_page)
     
     st.divider()
-    st.caption(f"資料庫版本: v0.7 (Dialog)")
+    
+    # // 【關鍵修正點】 側邊欄新增設定入口
+    if st.button("⚙️ 設定與管理", use_container_width=True):
+        st.session_state.view_mode = "settings"
+        st.rerun()
+        
+    st.caption(f"資料庫版本: v2.1 (BatchOps)")
 
 # --- 主畫面頂部資訊 ---
 col_stats, col_space, col_view = st.columns([4, 2, 3])
 with col_stats:
+    # 在設定頁面可以選擇隱藏統計數據，或保持顯示，這裡選擇保持
     st.markdown(
         f"""
         <div style="display: flex; align-items: center; background: white; 
@@ -139,43 +141,65 @@ with col_stats:
     )
 
 with col_view:
+    # 確保 session_state.view_mode 是有效的選項
+    valid_modes = ["list", "gallery", "calendar", "settings"]
+    if st.session_state.view_mode not in valid_modes:
+        st.session_state.view_mode = "list"
+
+    # 定義 Label Mapping
+    def get_label(mode):
+        mapping = {
+            "list": "列表模式",
+            "gallery": "畫廊模式",
+            "calendar": "日曆模式",
+            "settings": "⚙️ 設定"
+        }
+        return mapping.get(mode, mode)
+
+    # // 【關鍵修正點】 導航列加入 settings 並處理 index 以支援雙向綁定
     view_mode = st.radio(
         "view_mode_selector",
-        options=["list", "gallery", "calendar"],
-        format_func=lambda x: "列表模式" if x == "list" else ("畫廊模式" if x == "gallery" else "日曆模式"),
+        options=valid_modes,
+        format_func=get_label,
         horizontal=True,
         label_visibility="collapsed",
-        on_change=reset_page
+        on_change=reset_page,
+        index=valid_modes.index(st.session_state.view_mode)
     )
     st.session_state.view_mode = view_mode
 
 st.divider()
 
-# --- 資料過濾與排序 ---
-filtered_books = all_books
-if tag_filter:
-    filtered_books = [b for b in filtered_books if any(tag in b.tags for tag in tag_filter)]
-if status_filter:
-    filtered_books = [b for b in filtered_books if b.status in status_filter]
-if search_query:
-    filtered_books = [b for b in filtered_books if search_query in b.title or search_query in b.author]
+# --- 資料過濾與排序 (僅在非設定模式下需要) ---
+if st.session_state.view_mode != "settings":
+    filtered_books = all_books
+    if tag_filter:
+        filtered_books = [b for b in filtered_books if any(tag in b.tags for tag in tag_filter)]
+    if status_filter:
+        filtered_books = [b for b in filtered_books if b.status in status_filter]
+    if search_query:
+        filtered_books = [b for b in filtered_books if search_query in b.title or search_query in b.author]
 
-if sort_order == "最新入庫":
-    filtered_books.sort(key=lambda x: (x.added_date, x.author), reverse=True)
+    if sort_order == "最新入庫":
+        filtered_books.sort(key=lambda x: (x.added_date, x.author), reverse=True)
+    else:
+        filtered_books.sort(key=lambda x: (x.added_date, x.author), reverse=False)
+
+    # 分頁運算
+    items_limit = st.session_state.items_per_page
+    total_items = len(filtered_books)
+    total_pages = math.ceil(total_items / items_limit) if total_items > 0 else 1
+
+    if st.session_state.current_page > total_pages:
+        st.session_state.current_page = total_pages
+
+    start_idx = (st.session_state.current_page - 1) * items_limit
+    end_idx = start_idx + items_limit
+    current_page_books = filtered_books[start_idx:end_idx]
 else:
-    filtered_books.sort(key=lambda x: (x.added_date, x.author), reverse=False)
-
-# --- 分頁運算 ---
-items_limit = st.session_state.items_per_page
-total_items = len(filtered_books)
-total_pages = math.ceil(total_items / items_limit) if total_items > 0 else 1
-
-if st.session_state.current_page > total_pages:
-    st.session_state.current_page = total_pages
-
-start_idx = (st.session_state.current_page - 1) * items_limit
-end_idx = start_idx + items_limit
-current_page_books = filtered_books[start_idx:end_idx]
+    # 設定模式下，初始化一些變數避免報錯 (雖然不會用到)
+    total_items = 0
+    total_pages = 0
 
 # --- 導航列元件 ---
 def render_pagination(position="bottom"):
@@ -183,7 +207,6 @@ def render_pagination(position="bottom"):
     if total_pages <= 1:
         return
 
-    # 7 欄位佈局: [Spacer, First, Prev, InputArea, Next, Last, Spacer]
     _, c1, c2, c3, c4, c5, _ = st.columns([3, 0.8, 0.8, 1.8, 0.8, 0.8, 3], gap="small")
     
     key_prefix = f"nav_{position}"
@@ -219,8 +242,8 @@ def render_pagination(position="bottom"):
 
 # --- 視圖渲染 ---
 
-# 1. 上方導航列
-if total_items > 0 and st.session_state.view_mode in ["list", "gallery"]:
+# 1. 上方導航列 (設定模式隱藏)
+if st.session_state.view_mode in ["list", "gallery"] and total_items > 0:
     render_pagination(position="top")
     st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
 
@@ -229,21 +252,22 @@ if st.session_state.view_mode == "list":
     views.list_view.render_view(current_page_books)
 
 elif st.session_state.view_mode == "gallery":
-    # 畫廊模式：全螢幕 5 欄
     views.gallery_view.render_view(current_page_books, cols_num=5)
 
 elif st.session_state.view_mode == "calendar":
-    # 日曆視圖通常不需分頁，傳入 filtered_books 即可
     views.calendar_view.render_view(filtered_books)
 
-# 3. 下方導航列
-if total_items > 0 and st.session_state.view_mode in ["list", "gallery"]:
+elif st.session_state.view_mode == "settings":
+    # // 【關鍵修正點】 渲染設定頁面
+    views.settings_view.render_view()
+
+# 3. 下方導航列 (設定模式隱藏)
+if st.session_state.view_mode in ["list", "gallery"] and total_items > 0:
     st.divider()
     render_pagination(position="bottom")
 
-# --- 4. 詳情彈窗觸發區 (Phase 3 核心) ---
-# 當使用者在列表/畫廊點擊按鈕設定 selected_book 後，這裡會偵測到並觸發彈窗
+# --- 4. 詳情彈窗觸發區 ---
 if st.session_state.selected_book:
     views.book_detail.render_detail_dialog()
 
-# // 功能: 應用程式入口 (整合彈窗與全寬視圖)
+# // 功能: 應用程式入口 (整合設定管理)
