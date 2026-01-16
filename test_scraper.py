@@ -10,6 +10,7 @@ def main():
     # 這裡可以替換成您想測試的實際網址
     # 為了避免無效連結，請手動填入您目前想測試的網址
     test_urls = [
+        "http://egg19910707.blog.fc2.com/blog-entry-8127.html",
         # 範例 1: 晉江 (請填入一本您喜歡的晉江小說網址)
         # "http://www.jjwxc.net/onebook.php?novelid=xxxxxxx",
         
