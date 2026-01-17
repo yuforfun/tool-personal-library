@@ -10,15 +10,27 @@ def main():
     # 這裡可以替換成您想測試的實際網址
     # 為了避免無效連結，請手動填入您目前想測試的網址
     test_urls = [
-        "http://egg19910707.blog.fc2.com/blog-entry-8127.html",
+        "https://www.popo.tw/books/871979",
+        "https://www.popo.tw/books/883652",
+        
         # 範例 1: 晉江 (請填入一本您喜歡的晉江小說網址)
-        # "http://www.jjwxc.net/onebook.php?novelid=xxxxxxx",
+        # "",
         
         # 範例 2: 半夏
         # "https://www.banxia.co/...",
 
         # 範例 3: 小說狂人
         # "https://czbooks.net/n/...",
+        
+        # "https://www.bookwalker.com.tw/product/79083?srsltid=AfmBOoohX2ZeNvwAiHIF2zR3khZOMFR89AgGRiDWexMeCWUGyPSjHNaf",
+        # "https://www.books.com.tw/products/0010625673?sloc=main",
+        # "https://czbooks.net/n/cpg8epe",
+        # "https://www.jjwxc.net/onebook.php?novelid=3370619",
+        # "https://www.xbanxia.cc/books/13654.html",
+        # "https://uukanshu.cc/book/8036/",
+        # "https://ixdzs.tw/read/12386/",
+        # "http://egg19910707.blog.fc2.com/blog-entry-12961.html#more",
+
     ]
 
     if not test_urls:
